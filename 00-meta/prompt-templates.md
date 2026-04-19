@@ -15,6 +15,19 @@
 - 更新 `progress.json` 和 `task-queue.json`
 - 在批次结束时写 snapshot
 
+建议在调用时显式传入执行参数：
+
+- `EXECUTION_MODE=<supervised|deferred-review|unattended>`
+- `ASK_FOR_CONFIRMATION=<true|false>`
+- `BLOCK_ON_HUMAN_REVIEW=<true|false>`
+- `MAX_AUTO_STEPS=<number>`
+
+推荐组合：
+
+- 人工值守：`supervised / true / true`
+- 半托管：`deferred-review / false / false`
+- 无人值守批处理：`unattended / false / false`
+
 ## /wiki-init
 
 ```text
@@ -45,6 +58,7 @@
 2. 不要重置已有状态，除非明确是在重新初始化。
 3. 如果状态冲突，记录到 09-review/human-review.md。
 4. 输出必须能让下一位操作者直接继续工作。
+5. 将本次执行参数写入 `coder-llm-wiki/00-meta/progress.json.execution`。
 ```
 
 ## /wiki-inventory
@@ -243,6 +257,25 @@
 1. 汇总当前 phase、batch、coverage、review queue、blockers、high-risk gaps、next steps。
 2. 以状态同步为主，不要在 dashboard 中写大量技术细节。
 3. dashboard 应帮助读者快速判断下一步，而不是替代所有状态文件。
+```
+
+## Shared Execution Policy Block
+
+可附加到任意 `/wiki-*` 模板末尾：
+
+```text
+执行参数：
+- EXECUTION_MODE=<supervised|deferred-review|unattended>
+- ASK_FOR_CONFIRMATION=<true|false>
+- BLOCK_ON_HUMAN_REVIEW=<true|false>
+- MAX_AUTO_STEPS=<number>
+
+执行策略：
+- 将这些参数同步写入 `coder-llm-wiki/00-meta/progress.json.execution`
+- 如果 ASK_FOR_CONFIRMATION=false，不要向我请求“下一步动作”
+- 如果遇到可延期的人类判断，把问题写入 `coder-llm-wiki/09-review/human-review.md`，并继续当前批次内下一个可执行任务
+- 只有在缺少关键输入、权限不足、状态冲突无法自动裁决、或继续执行会导致产物不可靠时，才允许标记为 `blocked`
+- 达到 MAX_AUTO_STEPS 或当前批次完成后，更新 `status-dashboard.md` 和 snapshot，再停止
 ```
 
 ## Legacy Templates

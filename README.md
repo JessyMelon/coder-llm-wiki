@@ -63,6 +63,18 @@ See `coder-llm-wiki/00-meta/workflow-contract.md` for the full contract.
 
 ## How To Work
 
+### Execution modes
+
+`coder-llm-wiki` supports three execution styles:
+
+- `supervised`: prefer asking or stopping when human judgment is needed.
+- `deferred-review`: keep working when possible, but log human decisions into `09-review/human-review.md` instead of stopping immediately.
+- `unattended`: continue autonomously unless there is a hard blocker such as missing files, missing permissions, or an unresolved state conflict that would make outputs unreliable.
+
+Recommended default for long-running analysis is `deferred-review`. It preserves human oversight without requiring synchronous replies.
+
+Store the current run policy in `coder-llm-wiki/00-meta/progress.json.execution`, and reflect it in `00-meta/status-dashboard.md`.
+
 ### New repository analysis
 
 1. Build inventory first.

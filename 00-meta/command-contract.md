@@ -24,6 +24,21 @@
 4. 不得无理由重写整批文档。
 5. 如命令结果不足以通过 quality gates，必须返回 `needs-review` 或 `blocked` 语义，而不是伪装成功。
 
+## Execution Policy Semantics
+
+命令是否应暂停等待人工，取决于当前 run 的执行策略：
+
+- `supervised`: 可以在关键歧义处停止并等待人工回复
+- `deferred-review`: 优先返回 `needs-review`，把待人工判断项写入 review 文档，不因可延期问题而暂停
+- `unattended`: 优先返回 `success`、`partial` 或 `needs-review`，只有硬阻塞才返回 `blocked`
+
+这里的“硬阻塞”包括：
+
+- 必要输入文件缺失
+- 权限或环境限制导致无法读取/写入关键产物
+- 状态文件冲突且无法自动选择可信来源
+- 继续执行会明显降低产物可靠性
+
 ## Common Command Shape
 
 每个命令都应具备以下语义字段：
@@ -340,6 +355,11 @@
 - `needs-review`: 产物已生成，但必须经过 review gate
 - `blocked`: 缺信息、状态冲突或证据不足，无法继续
 - `partial`: 完成部分输出，但仍需后续补全
+
+补充约束：
+
+- 当 `execution.mode = deferred-review` 时，优先使用 `needs-review` 而不是 `blocked`
+- 当 `execution.mode = unattended` 时，`blocked` 仅用于硬阻塞
 
 ## Bottom Line
 

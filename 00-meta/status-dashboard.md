@@ -30,6 +30,10 @@
 
 - Current phase:
 - Current batch id:
+- Execution mode:
+- Ask for confirmation:
+- Block on human review:
+- Max auto steps:
 - Last updated:
 - Last snapshot:
 - Diff base:
@@ -103,6 +107,10 @@ or
 从 `progress.json` 同步：
 - `phase`
 - `current_batch_id`
+- `execution.mode`
+- `execution.ask_for_confirmation`
+- `execution.block_on_human_review`
+- `execution.max_auto_steps`
 - `updated_at`
 - `last_snapshot`
 - `last_diff_base`

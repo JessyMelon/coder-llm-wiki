@@ -9,10 +9,22 @@
 - 在 OpenCode 中打开该仓库
 - 从下面选择对应阶段的提示词直接发送
 
+建议先决定本轮执行模式：
+
+- `supervised`: 保留同步人工确认
+- `deferred-review`: 优先连续执行，把人工问题沉淀到 review 文档
+- `unattended`: 尽量自主完成当前批次，仅在硬阻塞时停止
+
 ## 1. Standard Startup Prompt
 
 ```text
 你现在要作为一个“基于 coder-llm-wiki 的仓库分析代理”工作。
+
+执行参数：
+- EXECUTION_MODE=<supervised|deferred-review|unattended>
+- ASK_FOR_CONFIRMATION=<true|false>
+- BLOCK_ON_HUMAN_REVIEW=<true|false>
+- MAX_AUTO_STEPS=<number>
 
 工作目标：
 为当前仓库建立一个长期可维护、证据驱动、可恢复的知识库，所有产物写入 `coder-llm-wiki/` 目录。
@@ -44,11 +56,15 @@
 执行方式：
 - 把当前工作当作 `/wiki-init` 开始
 - 先检查并修正 `progress.json`、`task-queue.json`、`status-dashboard.md`
+- 将执行参数写入 `progress.json.execution`
 - 明确当前 phase、current_batch_id、blockers、next steps
 - 然后根据当前状态决定下一步
 - 如果是新仓库且尚未初始化内容，优先执行 `/wiki-inventory`
 - inventory 完成后执行 `/wiki-index`
 - 再进入 module queue、module analysis、flow analysis、review、snapshot
+- 如果 `ASK_FOR_CONFIRMATION=false`，不要请求我提供“下一步动作”；请在当前批次内自行选择最合理的后续任务
+- 如果 `BLOCK_ON_HUMAN_REVIEW=false`，把待人工判断项写入 `coder-llm-wiki/09-review/human-review.md`，不要因此停止可继续的工作
+- 当达到 `MAX_AUTO_STEPS` 或当前批次完成时，再统一汇报结果并停止
 
 你的输出要求：
 - 不要只回复结论
@@ -66,6 +82,28 @@
 5. 写一份 snapshot
 
 如果当前已经有部分内容，请不要重置，基于现有状态继续推进。
+```
+
+### Recommended parameter presets
+
+```text
+人工值守：
+- EXECUTION_MODE=supervised
+- ASK_FOR_CONFIRMATION=true
+- BLOCK_ON_HUMAN_REVIEW=true
+- MAX_AUTO_STEPS=1
+
+半托管：
+- EXECUTION_MODE=deferred-review
+- ASK_FOR_CONFIRMATION=false
+- BLOCK_ON_HUMAN_REVIEW=false
+- MAX_AUTO_STEPS=5
+
+无人值守批次：
+- EXECUTION_MODE=unattended
+- ASK_FOR_CONFIRMATION=false
+- BLOCK_ON_HUMAN_REVIEW=false
+- MAX_AUTO_STEPS=20
 ```
 
 ## 2. Module Analysis Prompt

@@ -20,6 +20,31 @@
 5. 每次批量任务结束后都要写 snapshot。
 6. 如阶段输出未达标，不得直接推进到下一阶段。
 
+## Execution Policy
+
+为减少任务在运行中频繁等待人工响应，当前 run 应声明执行策略：
+
+- `execution.mode`
+  - `supervised`: 优先等待人工确认
+  - `deferred-review`: 优先继续执行，把需要人工判断的内容转写到 `09-review/human-review.md`
+  - `unattended`: 在不存在硬阻塞时持续执行，不主动等待人工回复
+- `execution.ask_for_confirmation`
+  - `true`: 遇到重要歧义时允许停下来问
+  - `false`: 不主动请求下一步动作，优先记录并继续
+- `execution.block_on_human_review`
+  - `true`: 需要人工判断时可直接进入 `blocked`
+  - `false`: 只在确实无法可靠推进时才 `blocked`
+- `execution.max_auto_steps`
+  - 单轮建议自动推进的最大任务数，用于在无人值守和人工复核之间做平衡
+
+推荐策略：
+
+- 日常人工协作：`supervised`
+- 希望尽量连续跑完一批：`deferred-review`
+- 后台批处理：`unattended`
+
+执行策略只影响“是否暂停等待人”，不影响 evidence、quality gate 和状态更新要求。
+
 ## Phase 0: Initialize
 
 ### Goal
@@ -59,6 +84,7 @@
 
 - 如果 meta 文件缺失，先记录 blocker，再补齐缺失文件
 - 如果已有历史状态冲突，写入 `09-review/human-review.md`
+- 如果 `execution.mode != supervised` 且冲突不影响当前产物可靠性，允许先记录冲突并继续后续可独立任务
 
 ### Next Step
 
@@ -97,6 +123,7 @@
 
 - 如果入口无法判定，记录到 `09-review/open-questions.md`
 - 如果仓库规模过大，允许按子系统拆 inventory 批次
+- 如果 `execution.ask_for_confirmation = false`，不得因为“下一步选哪个子系统”而暂停；应选择风险最高或入口最明确的子系统继续
 
 ### Next Step
 
@@ -166,6 +193,7 @@
 
 - 如果模块边界不稳定，先记录为候选分组，不强行定稿
 - 如果任务过大，继续拆分而不是保留巨型模块任务
+- 如果 `execution.ask_for_confirmation = false`，拆分策略优先选择最小可验证模块，不等待人工命名
 
 ### Next Step
 
@@ -203,6 +231,7 @@
 
 - 如果模块无法独立切分，记录边界问题并返回 queue 重拆
 - 如果关键源码不可读或生成内容不可信，标记为 `blocked`
+- 如果需要人工判断但不影响文档主体可靠性，写入 `09-review/<module>.questions.md` 和 `09-review/human-review.md`，继续处理下一个可执行任务
 
 ### Next Step
 
@@ -238,6 +267,7 @@
 
 - 如果 evidence 不足，退回补证据
 - 如果结论与源码冲突，记录到 `09-review/conflict-log.md`
+- 如果 `execution.block_on_human_review = false`，不要仅因存在待人工确认项而停止整个批次
 
 ### Next Step
 
