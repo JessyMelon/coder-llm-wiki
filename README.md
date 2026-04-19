@@ -26,6 +26,9 @@ These files play different roles:
 - `status-dashboard.md`: shows current progress, blockers, and next steps
 - `opencode-dispatch-checklist.md`: operator runbook for day-to-day execution
 
+If you want copy-paste prompts for OpenCode, see:
+- `coder-llm-wiki/00-meta/opencode-starter-prompts.md`
+
 ## Structure
 
 - `00-meta/`: project rules, progress, queue, prompts, glossary
