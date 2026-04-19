@@ -10,6 +10,9 @@
 ## Entry Points
 - `path/to/file`
 
+## Upstream Callers
+- `path/to/caller`
+
 ## Main Files
 - `path/to/file`
 
@@ -19,6 +22,10 @@
 ## Dependencies
 - Internal:
 - External:
+
+## Configuration Dependencies
+- `ENV_NAME`
+- `path/to/config`
 
 ## Data Read/Write
 - Databases:
@@ -31,11 +38,22 @@
 2. 
 3. 
 
+## Downstream Effects
+- 写入什么状态、触发什么流程、影响什么模块
+
 ## Important Invariants
 -
 
 ## Common Change Points
 -
+
+## Observability
+- Logs:
+- Metrics:
+- Traces:
+
+## Change Hazards
+- 哪些改动最容易引入回归，为什么
 
 ## Risks
 -

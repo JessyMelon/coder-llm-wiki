@@ -1,13 +1,30 @@
 {
-  "phase": "not_started",
+  "phase": "initialize",
+  "current_batch_id": "bootstrap",
   "updated_at": "",
+  "last_snapshot": "",
   "phases": {
+    "initialize": "pending",
     "inventory": "pending",
     "index": "pending",
-    "modules": "pending",
-    "flows": "pending",
+    "prepare_module_queue": "pending",
+    "module_analysis": "pending",
+    "lightweight_review": "pending",
+    "flow_planning": "pending",
+    "flow_analysis": "pending",
     "review": "pending",
+    "snapshot": "pending",
     "incremental_updates": "pending"
   },
+  "coverage": {
+    "inventory": 0,
+    "index": 0,
+    "modules_total": 0,
+    "modules_done": 0,
+    "flows_total": 0,
+    "flows_done": 0
+  },
+  "blockers": [],
+  "last_diff_base": "",
   "notes": []
 }

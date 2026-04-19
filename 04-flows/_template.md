@@ -14,8 +14,17 @@
 2. 
 3. 
 
+## Exit Conditions
+- 成功结束时系统处于什么状态
+
 ## Failure Paths
 -
+
+## Compensation / Retry
+- 失败后是否重试、回滚、补偿、人工介入
+
+## User Visible Failures
+- 用户、调用方或操作者能看到什么异常表现
 
 ## State Changes
 -
@@ -28,6 +37,11 @@
 
 ## Risks
 -
+
+## Operational Signals
+- Logs:
+- Metrics:
+- Alerts:
 
 ## Tests
 - `path/to/test`
